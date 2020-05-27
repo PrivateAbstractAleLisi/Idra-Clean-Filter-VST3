@@ -12,7 +12,7 @@
 
 #include <JuceHeader.h>
 
-#include <juce_dsp/juce_dsp.h>
+
 
 //==============================================================================
 /**
@@ -61,5 +61,5 @@ public:
 private:
     //==============================================================================
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(IdraCleanVstAudioProcessor)
-		dsp::ProcessorDuplicator<dsp::IIR::Filter<float>, dsp::IIR::Coefficients<float>> highPassFilter;
+		juce::dsp::ProcessorDuplicator<juce::dsp::IIR::Filter<float>, dsp::IIR::Coefficients<float>> highPassFilter;
 };
