@@ -57,7 +57,8 @@ public:
     void getStateInformation (MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
 
-	float mCutFreq;
+	float mCutFreq = 60.0f;
+
 private:
     //==============================================================================
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(IdraCleanVstAudioProcessor)

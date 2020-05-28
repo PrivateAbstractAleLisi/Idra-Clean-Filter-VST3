@@ -21,7 +21,7 @@ IdraCleanVstAudioProcessor::IdraCleanVstAudioProcessor()
 #endif
 		.withOutput("Output", AudioChannelSet::stereo(), true)
 #endif
-	), highPassFilter(dsp::IIR::Coefficients<float>::makeHighPass(44100.0f, 20.0f, 0.1f))
+	), highPassFilter(dsp::IIR::Coefficients<float>::makeHighPass(44100.0f, 20.0f))
 #endif
 {
 }
@@ -153,7 +153,7 @@ void IdraCleanVstAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiB
 	highPassFilter.process(dsp::ProcessContextReplacing<float>(block));
 
 	//relay changes in UI -> update the filter
-	*highPassFilter.state = *dsp::IIR::Coefficients<float>::makeHighPass(getSampleRate(), mCutFreq, 0.1f);
+	*highPassFilter.state = *dsp::IIR::Coefficients<float>::makeHighPass(getSampleRate(), mCutFreq);
 
 		//hpF è un process duplicator non un filter, etro nel PD e prendo lo state
 }

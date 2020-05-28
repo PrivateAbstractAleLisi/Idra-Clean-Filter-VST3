@@ -14,6 +14,8 @@
 #include "PluginProcessor.h"
 
 
+
+
 //==============================================================================
 /**
 */
@@ -34,6 +36,9 @@ public:
 private:
 
 	Slider mCutSlider;
+	Image background;
+	ImageComponent bgImage;
+	
 
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.

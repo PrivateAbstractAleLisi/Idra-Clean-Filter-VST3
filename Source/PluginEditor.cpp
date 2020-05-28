@@ -10,6 +10,11 @@
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+#include <JuceHeader.h>
+
+// Include the string library
+#include <string>
+//#include "../JuceLibraryCode/JuceHeader.h"
 
 
 
@@ -23,13 +28,28 @@ IdraCleanVstAudioProcessorEditor::IdraCleanVstAudioProcessorEditor (IdraCleanVst
 
 	mCutSlider.setSliderStyle(Slider::SliderStyle::Rotary);
 	mCutSlider.setRange(20.0f, 200.0f, 1.0f);
-	mCutSlider.setValue(100.0f);
+	mCutSlider.setValue(processor.mCutFreq);
 	mCutSlider.setTextBoxStyle(Slider::TextBoxBelow, true, 50, 20);
-	mCutSlider.setColour(Slider::ColourIds::textBoxTextColourId, Colours::black);
+	mCutSlider.setColour(Slider::ColourIds::textBoxTextColourId, Colours::yellow);
 	mCutSlider.setColour(Slider::ColourIds::rotarySliderFillColourId, Colours::yellow);
+	mCutSlider.setColour(Slider::ColourIds::rotarySliderOutlineColourId, Colours::pink);
 
 	mCutSlider.addListener(this);
+
+
+	background = ImageCache::getFromMemory(BinaryData::bg_hd_png, BinaryData::bg_hd_pngSize);
+
+
+	bgImage.setImage(background);
+	bgImage.toBehind(&mCutSlider);
+	mCutSlider.toFront(&bgImage);
+
+
+	addAndMakeVisible(bgImage);
 	addAndMakeVisible(mCutSlider);
+
+
+
 }
 
 IdraCleanVstAudioProcessorEditor::~IdraCleanVstAudioProcessorEditor()
@@ -42,6 +62,18 @@ void IdraCleanVstAudioProcessorEditor::paint (Graphics& g)
     // (Our component is opaque, so we must completely fill the background with a solid colour)
     g.fillAll (Colours::darkslategrey);
 
+	String conv = String::String(processor.mCutFreq);
+	g.setColour(Colours::pink);
+	g.drawSingleLineText("CUT FREQUENCY", 260, 280, juce::Justification::bottomLeft);
+	/*
+	Image background = ImageCache::getFromMemory(BinaryData::bg_hd_png, BinaryData::bg_hd_pngSize);
+
+	ImageComponent bgImage;
+	bgImage.setImage(background);
+	bgImage.addAndMakeVisible();
+	g.drawImageAt(background, 0, 0); */
+
+
    
 }
 
@@ -51,11 +83,13 @@ void IdraCleanVstAudioProcessorEditor::resized()
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..
 
-	mCutSlider.setBounds(300, 150, 200, 200);
+
+	bgImage.setBounds(0, 0, 500, 300);
+	mCutSlider.setBounds(260, 140, 130, 130);
 }
 
 void IdraCleanVstAudioProcessorEditor::sliderValueChanged(Slider *slider) {
-	if (slider == &mCutSlider) { //è un puntatore allo slider giusto?
+	if (slider == &mCutSlider) { //Ã¨ un puntatore allo slider giusto?
 		processor.mCutFreq = mCutSlider.getValue();
 	}
 	
