@@ -21,9 +21,12 @@ IdraCleanVstAudioProcessor::IdraCleanVstAudioProcessor()
 #endif
 		.withOutput("Output", AudioChannelSet::stereo(), true)
 #endif
-	), highPassFilter(dsp::IIR::Coefficients<float>::makeHighPass(44100.0f, 20.0f))
+	), highPassFilter(dsp::IIR::Coefficients<float>::makeHighPass(44100.0f, 20.0f)), treeState(*this, nullptr)
 #endif
 {
+	NormalisableRange<float> cutoffRange(20.0f, 200.0f);
+
+	treeState.createAndAddParameter("cutoff", "Cutoff", "cutoff", cutoffRange, 65.0f, nullptr, nullptr);
 }
 
 IdraCleanVstAudioProcessor::~IdraCleanVstAudioProcessor()
@@ -152,8 +155,9 @@ void IdraCleanVstAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiB
 
 	highPassFilter.process(dsp::ProcessContextReplacing<float>(block));
 
+	float cutFreqTree = *treeState.getRawParameterValue(CUT_ID);
 	//relay changes in UI -> update the filter
-	*highPassFilter.state = *dsp::IIR::Coefficients<float>::makeHighPass(getSampleRate(), mCutFreq);
+	*highPassFilter.state = *dsp::IIR::Coefficients<float>::makeHighPass(getSampleRate(), cutFreqTree);
 
 		//hpF è un process duplicator non un filter, etro nel PD e prendo lo state
 }

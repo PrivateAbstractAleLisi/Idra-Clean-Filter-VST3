@@ -48,6 +48,8 @@ IdraCleanVstAudioProcessorEditor::IdraCleanVstAudioProcessorEditor (IdraCleanVst
 	addAndMakeVisible(bgImage);
 	addAndMakeVisible(mCutSlider);
 
+	filterCutoffValue = new AudioProcessorValueTreeState::SliderAttachment(processor.treeState, "cutoff", mCutSlider);
+
 
 
 }

@@ -11,6 +11,8 @@
 #pragma once
 
 #include <JuceHeader.h>
+#define CUT_ID "cut"
+#define CUT_NAME "Cut"
 
 
 
@@ -58,6 +60,7 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override;
 
 	float mCutFreq = 60.0f;
+	AudioProcessorValueTreeState treeState;
 
 private:
     //==============================================================================

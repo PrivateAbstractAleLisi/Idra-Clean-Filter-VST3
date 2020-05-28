@@ -31,6 +31,8 @@ public:
 
 	void sliderValueChanged(Slider *slider) override;
 
+
+
 	
 
 private:
@@ -39,10 +41,13 @@ private:
 	Image background;
 	ImageComponent bgImage;
 	
+	ScopedPointer<AudioProcessorValueTreeState::SliderAttachment> filterCutoffValue;
 
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
     IdraCleanVstAudioProcessor& processor;
+	 
+
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (IdraCleanVstAudioProcessorEditor)
 };
