@@ -11,8 +11,6 @@
 #pragma once
 
 #include <JuceHeader.h>
-#define CUT_ID "cut"
-#define CUT_NAME "Cut"
 
 
 
@@ -59,11 +57,11 @@ public:
     void getStateInformation (MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
 
-	float mCutFreq = 60.0f;
-	AudioProcessorValueTreeState treeState;
+    float mCutFreq = 60.0f;
+    AudioProcessorValueTreeState treeState;
 
 private:
     //==============================================================================
-	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(IdraCleanVstAudioProcessor)
-		juce::dsp::ProcessorDuplicator<juce::dsp::IIR::Filter<float>, dsp::IIR::Coefficients<float>> highPassFilter;
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(IdraCleanVstAudioProcessor)
+        juce::dsp::ProcessorDuplicator<juce::dsp::IIR::Filter<float>, dsp::IIR::Coefficients<float>> highPassFilter;
 };

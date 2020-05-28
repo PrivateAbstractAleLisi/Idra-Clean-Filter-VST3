@@ -19,7 +19,7 @@
 //==============================================================================
 /**
 */
-class IdraCleanVstAudioProcessorEditor  : public AudioProcessorEditor, public Slider::Listener
+class IdraCleanVstAudioProcessorEditor  : public AudioProcessorEditor
 {
 public:
     IdraCleanVstAudioProcessorEditor (IdraCleanVstAudioProcessor&);
@@ -29,25 +29,25 @@ public:
     void paint (Graphics&) override;
     void resized() override;
 
-	void sliderValueChanged(Slider *slider) override;
 
 
 
-	
+    
 
 private:
 
-	Slider mCutSlider;
-	Image background;
-	ImageComponent bgImage;
-	
-	ScopedPointer<AudioProcessorValueTreeState::SliderAttachment> filterCutoffValue;
+    Slider mCutSlider;
+    Image background;
+    ImageComponent bgImage;
+    
+    ScopedPointer<AudioProcessorValueTreeState::SliderAttachment> sliderAttach;
 
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
     IdraCleanVstAudioProcessor& processor;
-	 
+     
 
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (IdraCleanVstAudioProcessorEditor)
 };
+

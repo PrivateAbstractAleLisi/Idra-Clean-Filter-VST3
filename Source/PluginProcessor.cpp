@@ -14,19 +14,22 @@
 //==============================================================================
 IdraCleanVstAudioProcessor::IdraCleanVstAudioProcessor()
 #ifndef JucePlugin_PreferredChannelConfigurations
-	: AudioProcessor(BusesProperties()
+    : AudioProcessor(BusesProperties()
 #if ! JucePlugin_IsMidiEffect
 #if ! JucePlugin_IsSynth
-		.withInput("Input", AudioChannelSet::stereo(), true)
+        .withInput("Input", AudioChannelSet::stereo(), true)
 #endif
-		.withOutput("Output", AudioChannelSet::stereo(), true)
+        .withOutput("Output", AudioChannelSet::stereo(), true)
 #endif
-	), highPassFilter(dsp::IIR::Coefficients<float>::makeHighPass(44100.0f, 20.0f)), treeState(*this, nullptr)
+    ), highPassFilter(dsp::IIR::Coefficients<float>::makeHighPass(44100.0f, 20.0f)), treeState(*this, nullptr)
 #endif
 {
-	NormalisableRange<float> cutoffRange(20.0f, 200.0f);
+    NormalisableRange<float> cutoffRange(20.0f, 200.0f);
 
-	treeState.createAndAddParameter("cutoff", "Cutoff", "cutoff", cutoffRange, 65.0f, nullptr, nullptr);
+    treeState.createAndAddParameter("cutoff", "Cutoff", "Cutoff", cutoffRange, 64.0f, nullptr, nullptr);
+    
+    //after all calls of create and add parameters
+    treeState.state = ValueTree("savedValue");
 }
 
 IdraCleanVstAudioProcessor::~IdraCleanVstAudioProcessor()
@@ -101,12 +104,12 @@ void IdraCleanVstAudioProcessor::prepareToPlay (double sampleRate, int samplesPe
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
 
-	dsp::ProcessSpec spec;
-	spec.sampleRate = sampleRate;
-	spec.maximumBlockSize = samplesPerBlock;
-	spec.numChannels = getTotalNumOutputChannels();
-	highPassFilter.prepare(spec);
-	highPassFilter.reset();
+    dsp::ProcessSpec spec;
+    spec.sampleRate = sampleRate;
+    spec.maximumBlockSize = samplesPerBlock;
+    spec.numChannels = getTotalNumOutputChannels();
+    highPassFilter.prepare(spec);
+    highPassFilter.reset();
 
 
 }
@@ -151,15 +154,14 @@ void IdraCleanVstAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiB
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
-	dsp::AudioBlock<float> block(buffer);
+    dsp::AudioBlock<float> block(buffer);
 
-	highPassFilter.process(dsp::ProcessContextReplacing<float>(block));
+    highPassFilter.process(dsp::ProcessContextReplacing<float>(block));
 
-	float cutFreqTree = *treeState.getRawParameterValue(CUT_ID);
-	//relay changes in UI -> update the filter
-	*highPassFilter.state = *dsp::IIR::Coefficients<float>::makeHighPass(getSampleRate(), cutFreqTree);
+    float freqValue = *treeState.getRawParameterValue("cutoff");
+    *highPassFilter.state = *dsp::IIR::Coefficients<float>::makeHighPass(getSampleRate(), freqValue);
 
-		//hpF è un process duplicator non un filter, etro nel PD e prendo lo state
+        //hpF è un process duplicator non un filter, etro nel PD e prendo lo state
 }
 
 //==============================================================================
@@ -176,15 +178,18 @@ AudioProcessorEditor* IdraCleanVstAudioProcessor::createEditor()
 //==============================================================================
 void IdraCleanVstAudioProcessor::getStateInformation (MemoryBlock& destData)
 {
-    // You should use this method to store your parameters in the memory block.
-    // You could do that either as raw data, or use the XML or ValueTree classes
-    // as intermediaries to make it easy to save and load complex data.
+    auto state = treeState.copyState();
+    std::unique_ptr<XmlElement> xml (state.createXml());
+    copyXmlToBinary (*xml, destData);
 }
 
 void IdraCleanVstAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
-    // You should use this method to restore your parameters from this memory block,
-    // whose contents will have been created by the getStateInformation() call.
+    std::unique_ptr<XmlElement> xmlState (getXmlFromBinary (data, sizeInBytes));
+ 
+    if (xmlState.get() != nullptr)
+        if (xmlState->hasTagName (treeState.state.getType()))
+            treeState.replaceState (ValueTree::fromXml (*xmlState));
 }
 
 //==============================================================================
@@ -193,3 +198,4 @@ AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
     return new IdraCleanVstAudioProcessor();
 }
+
